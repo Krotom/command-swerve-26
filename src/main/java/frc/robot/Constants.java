@@ -10,5 +10,18 @@ public class Constants {
         public static final int kShooterRingMotorID = 3;
 
         public static final int kHoodMotorID = 4;
+
+        public static final double kRingGearRatio = 100.0; // TODO learn the actual ratios
+        public static final double kHoodGearRatio = 50.0;
+
+        public static final double kMaxRingAngleDeg = 90.0;
+        public static final double kMinHoodAngleDeg = 0.0;
+        public static final double kMaxHoodAngleDeg = 45.0;
+
+    }
+
+    public class IntakeConstants {
+        public static final int kDeployMotorID = 6;
+        public static final int kIntakeMotorID = 7;
     }
 }
