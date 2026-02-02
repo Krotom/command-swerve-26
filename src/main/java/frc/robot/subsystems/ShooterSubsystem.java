@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+// TODO add ring security measures
+
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;

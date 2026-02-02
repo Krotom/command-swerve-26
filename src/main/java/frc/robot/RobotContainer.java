@@ -9,13 +9,26 @@ import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.FollowPathCommand;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.events.EventTrigger;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.Unit;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -41,15 +54,87 @@ public class RobotContainer {
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-    private final SendableChooser<Command> autoChooser;
+    private final SendableChooser<String> autoChooser;
 
     public RobotContainer() {
-        autoChooser = AutoBuilder.buildAutoChooser("Main Auto");
+        autoChooser = new SendableChooser<String>();
+
+        boolean first = true;
+
+        for (String autoName : AutoBuilder.getAllAutoNames()) {
+            if (first) {
+                autoChooser.setDefaultOption(autoName, autoName);
+                first = false;
+            } else {
+                autoChooser.addOption(autoName, autoName);
+            }
+        }
+
         SmartDashboard.putData("Auto Mode", autoChooser);
 
         configureBindings();
 
+        NamedCommands.registerCommand("ShootAll", new Command() {}); // FIXME implement shoot all when finished
+
         CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand());
+
+        SmartDashboard.putData("Swerve Drive", new Sendable() {
+            @Override
+            public void initSendable(SendableBuilder builder) {
+                builder.setSmartDashboardType("SwerveDrive");
+
+                builder.addDoubleProperty(
+                    "Front Left Angle",
+                    () -> drivetrain.getState().ModuleStates[0].angle.getRadians(),
+                    null
+                );
+                builder.addDoubleProperty(
+                    "Front Left Velocity",
+                    () -> drivetrain.getState().ModuleStates[0].speedMetersPerSecond,
+                    null
+                );
+
+                builder.addDoubleProperty(
+                    "Front Right Angle",
+                    () -> drivetrain.getState().ModuleStates[1].angle.getRadians(),
+                    null
+                );
+                builder.addDoubleProperty(
+                    "Front Right Velocity",
+                    () -> drivetrain.getState().ModuleStates[1].speedMetersPerSecond,
+                    null
+                );
+
+                builder.addDoubleProperty(
+                    "Back Left Angle",
+                    () -> drivetrain.getState().ModuleStates[2].angle.getRadians(),
+                    null
+                );
+                builder.addDoubleProperty(
+                    "Back Left Velocity",
+                    () -> drivetrain.getState().ModuleStates[2].speedMetersPerSecond,
+                    null
+                );
+
+                builder.addDoubleProperty(
+                    "Back Right Angle",
+                    () -> drivetrain.getState().ModuleStates[3].angle.getRadians(),
+                    null
+                );
+                builder.addDoubleProperty(
+                    "Back Right Velocity",
+                    () -> drivetrain.getState().ModuleStates[3].speedMetersPerSecond,
+                    null
+                );
+
+                builder.addDoubleProperty(
+                    "Robot Angle",
+                    () -> drivetrain.getState().Pose.getRotation().getRadians(),
+                    null
+                );
+            }
+        });
+
     }
 
     private void configureBindings() {
@@ -86,9 +171,29 @@ public class RobotContainer {
         driverJoystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
         drivetrain.registerTelemetry(logger::telemeterize);
+
+        new EventTrigger("EnableIntake").onTrue(new PrintCommand("Intake Deployed")).whileTrue(new Command() {}).onFalse(new PrintCommand("Intake Retracted"));
+
+        // FIXME add the intake deployment, retraction and enabling commands here when finished
     }
 
     public Command getAutonomousCommand() {
-        return autoChooser.getSelected();
+        try {
+            System.out.println("Fetching auto: " + autoChooser.getSelected());
+            PathPlannerPath path = PathPlannerAuto.getPathGroupFromAutoFile(autoChooser.getSelected()).get(0);
+            PathConstraints constraint = new PathConstraints(3.0, 3.0, Units.degreesToRadians(540.0), Units.degreesToRadians(720.0));
+            System.out.println("Got path to fetch starting position. Position: " + path.getStartingHolonomicPose().orElseThrow());
+            Command comm;
+            if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
+                comm = AutoBuilder.pathfindToPoseFlipped(path.getStartingHolonomicPose().orElseThrow(), constraint, 3.0);
+            } else {
+                comm = AutoBuilder.pathfindToPose(path.getStartingHolonomicPose().orElseThrow(), constraint, 3.0);
+            }
+            return comm.andThen(new PathPlannerAuto(autoChooser.getSelected()));
+        } catch (Exception e) {
+            System.out.println("Failed to load start position from auto: " + e.getMessage());
+            e.printStackTrace();
+            return new PathPlannerAuto(autoChooser.getSelected());
+        }
     }
 }
