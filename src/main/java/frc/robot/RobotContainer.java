@@ -18,7 +18,6 @@ import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.Unit;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -28,13 +27,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 
 public class RobotContainer {
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
@@ -52,7 +52,9 @@ public class RobotContainer {
 
     private final CommandXboxController driverJoystick = new CommandXboxController(0);
 
-    public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+    private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+    private final IntakeSubsystem m_IntakeSubsystem = new IntakeSubsystem();
+    private final ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem();
 
     private final SendableChooser<String> autoChooser;
 
@@ -78,7 +80,7 @@ public class RobotContainer {
 
         CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand());
 
-        SmartDashboard.putData("Swerve Drive", new Sendable() {
+        /* SmartDashboard.putData("Swerve Drive", new Sendable() {
             @Override
             public void initSendable(SendableBuilder builder) {
                 builder.setSmartDashboardType("SwerveDrive");
@@ -133,7 +135,7 @@ public class RobotContainer {
                     null
                 );
             }
-        });
+        }); */
 
     }
 
@@ -172,11 +174,8 @@ public class RobotContainer {
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        new EventTrigger("EnableIntake").onTrue(new PrintCommand("Intake Deployed")).whileTrue(new Command() {}).onFalse(new PrintCommand("Intake Retracted"));
-
-        // FIXME add the intake deployment, retraction and enabling commands here when finished
+        // FIXME add the intake deployment
     }
-
     public Command getAutonomousCommand() {
         try {
             System.out.println("Fetching auto: " + autoChooser.getSelected());

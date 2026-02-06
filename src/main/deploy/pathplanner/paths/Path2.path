@@ -133,14 +133,7 @@
       "name": "Point Towards Zone"
     }
   ],
-  "eventMarkers": [
-    {
-      "name": "EnableIntake",
-      "waypointRelativePos": 1.8928571428571423,
-      "endWaypointRelativePos": 3.5833333333333273,
-      "command": null
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,

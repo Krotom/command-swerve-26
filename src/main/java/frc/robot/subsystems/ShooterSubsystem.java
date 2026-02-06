@@ -13,6 +13,7 @@ import frc.robot.Constants.ShooterConstants;;
 
 public class ShooterSubsystem extends SubsystemBase {
     private TalonFX feederMotor;
+    private TalonFX spinWheelMotor;
 
     private TalonFX shooterLeader;
     private TalonFX shooterFollower;
@@ -23,6 +24,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public ShooterSubsystem() {
         feederMotor = new TalonFX(ShooterConstants.kFeederMotorID);
+        spinWheelMotor = new TalonFX(ShooterConstants.kSpinWheelMotorID);
 
         shooterLeader = new TalonFX(ShooterConstants.kShooterLeaderID);
         shooterFollower = new TalonFX(ShooterConstants.kShooterFollowerID);
@@ -55,6 +57,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     private void startFeeder() {
         feederMotor.set(1);
+        spinWheelMotor.set(-1);
     }
 
     public void aim(double x, double y) {
