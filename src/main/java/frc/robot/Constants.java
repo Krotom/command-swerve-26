@@ -18,6 +18,8 @@ public class Constants {
         public static final double kMaxRingAngleDeg = 90.0;
         public static final double kMinHoodAngleDeg = 0.0;
         public static final double kMaxHoodAngleDeg = 45.0;
+
+        public static final double kShooterRPM
     }
 
     public class IntakeConstants {

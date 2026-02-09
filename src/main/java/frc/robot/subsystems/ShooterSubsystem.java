@@ -8,6 +8,7 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
+import static edu.wpi.first.units.Units.*;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;;
 
@@ -48,6 +49,10 @@ public class ShooterSubsystem extends SubsystemBase {
 
     private void spinShooterToLife() {
         shooterLeader.setControl(new VelocityVoltage(150));
+    }
+
+    public double getShooterRPM() {
+        return shooterLeader.getVelocity().getValue().in(RPM);
     }
 
     private void stopShooter() {
