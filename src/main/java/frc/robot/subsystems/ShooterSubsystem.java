@@ -47,7 +47,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
 
-    private void spinShooterToLife() {
+    public void spinShooterToLife() {
         shooterLeader.setControl(new VelocityVoltage(150));
     }
 
@@ -55,12 +55,16 @@ public class ShooterSubsystem extends SubsystemBase {
         return shooterLeader.getVelocity().getValue().in(RPM);
     }
 
-    private void stopShooter() {
+    public boolean atSetpoint() {
+        return Math.abs(getShooterRPM() - 9000) < 100;
+    }
+
+    public void stopShooter() {
         shooterLeader.set(0);
         feederMotor.set(0);
     }
 
-    private void startFeeder() {
+    public void startFeeder() {
         feederMotor.set(1);
         spinWheelMotor.set(-1);
     }
