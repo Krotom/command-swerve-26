@@ -11,8 +11,8 @@ public class IntakeSubsystem extends SubsystemBase{
     private boolean intakeState = false;
     
     public IntakeSubsystem() {
-        deployMotor = new TalonFX(IntakeConstants.kDeployMotorID);
-        intakeMotor = new TalonFX(IntakeConstants.kIntakeMotorID);
+        deployMotor = new TalonFX(IntakeConstants.INTAKE_OPENER_MOTOR_ID);
+        intakeMotor = new TalonFX(IntakeConstants.INTAKE_MOTOR_ID);
     }
 
     @Override

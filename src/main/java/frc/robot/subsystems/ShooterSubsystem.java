@@ -10,7 +10,9 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
 import static edu.wpi.first.units.Units.*;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.ShooterConstants;;
+import frc.robot.Constants.HoodConstants;
+import frc.robot.Constants.ShooterConstants;
+import frc.robot.Constants.TurretConstants;
 
 public class ShooterSubsystem extends SubsystemBase {
     private TalonFX feederMotor;
@@ -19,26 +21,23 @@ public class ShooterSubsystem extends SubsystemBase {
     private TalonFX shooterLeader;
     private TalonFX shooterFollower;
 
-    private TalonFX shooterRingMotor;
+    private TalonFX turretMotor;
 
     private TalonFX hoodMotor;
 
     public ShooterSubsystem() {
-        feederMotor = new TalonFX(ShooterConstants.kFeederMotorID);
-        spinWheelMotor = new TalonFX(ShooterConstants.kSpinWheelMotorID);
-
-        shooterLeader = new TalonFX(ShooterConstants.kShooterLeaderID);
-        shooterFollower = new TalonFX(ShooterConstants.kShooterFollowerID);
+        shooterLeader = new TalonFX(ShooterConstants.SHOOTER_LEADER_MOTOR_ID);
+        shooterFollower = new TalonFX(ShooterConstants.SHOOTER_FOLLOWER_MOTOR_ID);
 
         shooterFollower.setControl(
             new Follower(shooterLeader.getDeviceID(), MotorAlignmentValue.Opposed)
         );
 
-        shooterRingMotor = new TalonFX(ShooterConstants.kShooterRingMotorID);
+        turretMotor = new TalonFX(TurretConstants.TURRET_MOTOR_ID);
 
-        hoodMotor = new TalonFX(ShooterConstants.kHoodMotorID);
+        hoodMotor = new TalonFX(HoodConstants.HOOD_MOTOR_ID);
 
-        shooterRingMotor.setPosition(0);
+        turretMotor.setPosition(0);
         hoodMotor.setPosition(0);
     }
 
@@ -85,7 +84,7 @@ public class ShooterSubsystem extends SubsystemBase {
         double hoodRotations =
             degreesToRotations(hoodAngleDeg, ShooterConstants.kHoodGearRatio);
 
-        shooterRingMotor.setControl(
+        turretMotor.setControl(
             new PositionVoltage(ringRotations)
         );
 
