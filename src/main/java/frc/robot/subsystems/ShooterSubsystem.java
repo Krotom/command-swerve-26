@@ -4,7 +4,6 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
-import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
@@ -15,14 +14,10 @@ import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.TurretConstants;
 
 public class ShooterSubsystem extends SubsystemBase {
-    private TalonFX feederMotor;
-    private TalonFX spinWheelMotor;
-
     private TalonFX shooterLeader;
     private TalonFX shooterFollower;
 
     private TalonFX turretMotor;
-
     private TalonFX hoodMotor;
 
     public ShooterSubsystem() {
@@ -60,36 +55,5 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public void stopShooter() {
         shooterLeader.set(0);
-        feederMotor.set(0);
-    }
-
-    public void startFeeder() {
-        feederMotor.set(1);
-        spinWheelMotor.set(-1);
-    }
-
-    public void aim(double x, double y) {
-        x = Math.max(-1.0, Math.min(1.0, x));
-        y = Math.max(-1.0, Math.min(1.0, y));
-
-        double ringAngleDeg = x * ShooterConstants.kMaxRingAngleDeg;
-
-        double hoodAngleDeg =
-        ShooterConstants.kMinHoodAngleDeg +
-        (y + 1.0) / 2.0 * (ShooterConstants.kMaxHoodAngleDeg - ShooterConstants.kMinHoodAngleDeg);
-
-        double ringRotations =
-        degreesToRotations(ringAngleDeg, ShooterConstants.kRingGearRatio);
-
-        double hoodRotations =
-            degreesToRotations(hoodAngleDeg, ShooterConstants.kHoodGearRatio);
-
-        turretMotor.setControl(
-            new PositionVoltage(ringRotations)
-        );
-
-        hoodMotor.setControl(
-            new PositionVoltage(hoodRotations)
-        );
     }
 }

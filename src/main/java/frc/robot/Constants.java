@@ -40,7 +40,7 @@ public class Constants {
         public static final Double HALF_CLOSE_INTAKE_SETPOINT = 0.0;
         public static final Double OPEN_INTAKE_SETPOINT = 0.0;
 
-        public static final Double[] SETPOINTS = {0.0, 0.0, 0.0};
+        public static final Double[] SETPOINTS = {CLOSE_INTAKE_SETPOINT, HALF_CLOSE_INTAKE_SETPOINT, OPEN_INTAKE_SETPOINT};
         public static final Integer CLOSE_INTAKE_INDEX = 0;
         public static final Integer HALF_CLOSE_INTAKE_INDEX = 1;
         public static final Integer OPEN_INTAKE_INDEX = 2;
